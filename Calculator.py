@@ -3,6 +3,17 @@ from PIL import ImageTk,Image
 from tkinter import colorchooser as cc
 from tkinter import font
 from tkinter.ttk import Combobox
+from os import startfile as sf
+from tkinter.messagebox import showerror as se
+from tkinter.messagebox import askyesno as ayn
+ 
+# Basic Variables
+default_bg_color = 'sky blue'
+default_bg_digits_color = 'purple'
+default_font_style = 'Times New Roman'
+Normal_button_size = (53,53)
+Clear_button_size = (180,100)
+Image_path = 'C:\\Users\\Priyanshu\\Desktop\\Button Images\\' 
 
 
 # Basic Config for Calculator Window
@@ -11,15 +22,6 @@ Calc_window.title('Normal Calculator')
 Calc_window.geometry('263x630')
 Calc_window.resizable(width = 0 ,height = 0)
 Calc_window.configure(background = 'sky blue')
-
-
-# Basic Variables
-default_bg_color = 'sky blue'
-default_bg_digits_color = 'purple'
-default_font_style = 'Times New Roman'
-Normal_button_size = (53,53)
-Clear_button_size = (180,100)
-Image_path = 'C:\\Users\\Priyanshu\\Desktop\\Button Images\\' 
 
 # All Images Initialize
 All_Comboboxes = ()
@@ -237,7 +239,7 @@ def Pick_Button_Image():
     for i in range(Length_Button_names):
         Button_label_one_third = tk.Label(Choose_Button_image_window,text = Button_names_one_third[i],font = ('Times New Roman',20))
         Button_label_one_third.grid(row = Button_one_third_label_row_list[i]  , column = 0 , pady = 10)
-        Images_Combobox_one_third = Combobox(Choose_Button_image_window , values = One_third_button_values[i])
+        Images_Combobox_one_third = Combobox(Choose_Button_image_window , values = One_third_button_values[i] , state = 'readonly')
         Images_Combobox_one_third.grid(row = Button_one_third_Combobox_row_list[i]  , column = 0)
         if Pick_Button_Image_times == 0:
             Images_Combobox_one_third.set(One_third_button_values[i][0])
@@ -250,7 +252,7 @@ def Pick_Button_Image():
     for i in range(Length_Button_names):    
         Button_label_two_third = tk.Label(Choose_Button_image_window,text = Button_names_two_third[i],font = ('Times New Roman',20))
         Button_label_two_third.grid(row = Button_one_third_label_row_list[i]  , column = 1 , pady = 10)
-        Images_Combobox_two_third = Combobox(Choose_Button_image_window , values = two_third_button_values[i])
+        Images_Combobox_two_third = Combobox(Choose_Button_image_window , values = two_third_button_values[i] , state = 'readonly')
         Images_Combobox_two_third.grid(row = Button_one_third_Combobox_row_list[i]  , column = 1)
         if Pick_Button_Image_times == 0:
             Images_Combobox_two_third.set(two_third_button_values[i][0])
@@ -262,7 +264,7 @@ def Pick_Button_Image():
     for i in range(Length_Button_names):    
         Button_label_names_remaining = tk.Label(Choose_Button_image_window,text = Button_names_remaining[i],font = ('Times New Roman',20))
         Button_label_names_remaining.grid(row = Button_one_third_label_row_list[i]  , column = 2 , pady = 10)
-        Images_Combobox_names_remaining = Combobox(Choose_Button_image_window , values = remaining_Buttons_values[i])
+        Images_Combobox_names_remaining = Combobox(Choose_Button_image_window , values = remaining_Buttons_values[i],state = 'readonly')
         Images_Combobox_names_remaining.grid(row = Button_one_third_Combobox_row_list[i]  , column = 2)
         Images_Combobox_names_remaining.set(remaining_Buttons_values[i][0])
         if Pick_Button_Image_times == 0:
@@ -277,7 +279,7 @@ def Pick_Button_Image():
         
     Button_label_clear_all= tk.Label(Choose_Button_image_window,text = 'Choose For Clear All',font = ('Times New Roman',20))
     Button_label_clear_all.grid(row = 14  , column = 1,pady = 15 )
-    Images_Combobox_clear_all = Combobox(Choose_Button_image_window,values = Button_Clear_all_values)
+    Images_Combobox_clear_all = Combobox(Choose_Button_image_window,values = Button_Clear_all_values , state = 'readonly')
     Images_Combobox_clear_all.grid(row = 15 , column = 1)
     if Pick_Button_Image_times == 0:
         Images_Combobox_clear_all.set('Clear All Image 1')
@@ -285,10 +287,9 @@ def Pick_Button_Image():
         Images_Combobox_clear_all.set(get_values[-1])
         
     All_Comboboxes += Images_Combobox_clear_all,
-    Pick_Button_Image_times+=1
     
     def Ok_Image():
-        global get_values
+        global get_values , Pick_Button_Image_times
         get_values = ()
         Button_Images_All_Values = (Button_9_images_initialize,Button_8_images_initialize,Button_7_images_initialize, Button_6_images_initialize ,Button_5_images_initialize ,Button_4_images_initialize ,Button_3_images_initialize ,Button_2_images_initialize ,Button_1_images_initialize ,Button_0_images_initialize, Button_Plus_images_initialize ,Button_Minus_images_initialize ,  Button_Multiply_images_initialize , Button_Decimal_images_initialize , Button_Divide_images_initialize ,  Button_Square_images_initialize ,Button_Underoot_images_initialize ,  Button_Equal_to_images_initialize,Button_Clear_images_initialize)
         for i in All_Comboboxes:
@@ -299,16 +300,12 @@ def Pick_Button_Image():
         for i in range(len(get_values)):
             Image_place = int(get_values[i][-1])
             Buttons_list[i].config(image = Button_Images_All_Values[i][Image_place-1])
+        Pick_Button_Image_times+=1
         Choose_Button_image_window.destroy()
         
     
-    
-        
-    Cancel_Button = tk.Button(Choose_Button_image_window , text = 'Cancel',font = ('Arial Black',15),bd = 6)
-    Cancel_Button.grid(row = 15 , column = 0)
-    
-    Ok_Button_Image = tk.Button(Choose_Button_image_window , text = 'OK',font = ('Arial Black',15),bd = 6 , command = Ok_Image)
-    Ok_Button_Image.grid(row = 15 , column = 2)
+    Ok_Button = tk.Button(Choose_Button_image_window , text = 'OK',font = ('Arial Black',15),bd = 6 , command = Ok_Image)
+    Ok_Button.grid(row = 15 , column = 2)
     
     
 
@@ -318,9 +315,6 @@ def Pick_color_background():
     selected = color[1]
     Digits_frame.configure(background = selected)
     default_bg_color = selected
-    
-    
-
 
 def Pick_color_Digits():
     global default_bg_digits_color
@@ -335,7 +329,7 @@ def Pick_default_font_style():
     Choose_label = tk.Label(Font_Window,text = 'Choose Font Style',font = ('Times New Roman',30),relief = tk.SUNKEN , bd = 6)
     Choose_label.pack()
     font_families = tuple(font.families())
-    Font_combobox = Combobox(Font_Window , values = font_families)
+    Font_combobox = Combobox(Font_Window , values = font_families , state = 'readonly')
     get_font = Entry_box.cget('font')[0:-3]
     if get_font[0]=='{':
         Font_combobox.set(get_font[1:][:len(get_font)-2])
@@ -370,10 +364,47 @@ def equal_to():
     except SyntaxError:
         Entry_box.delete(0,tk.END)
         Entry_box.insert(0,'ERROR!!')
+    except NameError:
+        Entry_box.delete(0,tk.END)
+        Entry_box.insert(0,'ERROR!!')
     else:
+        with open('History.txt','a') as f:
+            f.write(f'{Entry_box.get()} = {evaluated}\n')
+            
         Entry_box.delete(0,tk.END)
         Entry_box.insert(0,evaluated)
         
+def Show_History():
+    with open('History.txt' , 'r') as f:
+        if len(f.readlines())==0:
+            se('Error' , 'No History Present')
+        else:
+            sf('History.txt')
+
+def Clear_History():
+    with open('History.txt','r') as f:
+        if len(f.readlines())==0:
+            se('Error','History is Already Empty')
+        else:
+            get_answer = ayn('Calculator','Are you sure you want to clear the History ? ')
+            if get_answer:
+                with open('History.txt' , 'w') as f:
+                    pass
+
+def Swap_Buttons_Places():
+    Swap_Window = tk.Toplevel(Calc_window)
+    Swap_label = tk.Label(Swap_Window , text = 'Swap Places between Two Buttons' , font = ('Arial' , 30 , 'bold'),bd = 5 , relief = tk.SUNKEN , bg = 'light yellow' , fg = 'red')
+    Swap_label.grid(row = 0 ,columnspan = 2)
+    Button_swap_values = ()
+    Button_places = tuple(zip(row_places[::-1] + remaining_Buttons_row_places,column_places[::-1] +remaining_Buttons_column_places)) + ((6,2),)
+    First_Button_combobox = Combobox(Swap_Window ,)
+    
+    
+    
+
+with open('History.txt' , 'r') as f:
+    pass
+
 
 # Creating Menus
 main_menu = tk.Menu(Calc_window)
@@ -381,6 +412,9 @@ Calc_window.config(menu = main_menu)
 
 file_menu = tk.Menu(main_menu , tearoff = False)
 main_menu.add_cascade(label = "File" , menu = file_menu)
+file_menu.add_command(label = 'Show History' , command = Show_History)
+file_menu.add_command(label = 'Clear History' , command = Clear_History)
+
 
 Edit_menu = tk.Menu(main_menu , tearoff = False)
 main_menu.add_cascade(label = 'Edit' , menu = Edit_menu)
@@ -388,6 +422,7 @@ Edit_menu.add_command(label = 'Change Background Colour',command = Pick_color_ba
 Edit_menu.add_command(label = 'Change Digits Border Colour',command = Pick_color_Digits)
 Edit_menu.add_command(label = 'Change Font Style',command = Pick_default_font_style)
 Edit_menu.add_command(label = 'Change Button Image',command = Pick_Button_Image)
+Edit_menu.add_command(label = 'Swap Buttons Places',command = Swap_Buttons_Places)
 
 # Images for Numbers
 Image_names = ('Plus Image 1.jpg','Minus Image 1.jpg','Multiply Image 1.jpg','Decimal Image 1.jpg','Divide Image 1.jpg','Square Image 1.jpg','Underoot Image 1.jpg','Zero Image 1.jpg','One Image 1.jpg','Two Image 1.jpg','Three Image 1.jpg','Four Image 1.jpg','Five Image 1.jpg','Six Image 1.jpg','Seven Image 1.jpg','Eight Image 1.jpg','Nine Image 1.jpg')
