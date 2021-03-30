@@ -6,6 +6,7 @@ from tkinter.ttk import Combobox
 from os import startfile as sf
 from tkinter.messagebox import showerror as se
 from tkinter.messagebox import askyesno as ayn
+from tkinter import simpledialog as sd
  
 # Basic Variables
 default_bg_color = 'sky blue'
@@ -392,17 +393,45 @@ def Clear_History():
                     pass
 
 def Swap_Buttons_Places():
-    Swap_Window = tk.Toplevel(Calc_window)
-    Swap_label = tk.Label(Swap_Window , text = 'Swap Places between Two Buttons' , font = ('Arial' , 30 , 'bold'),bd = 5 , relief = tk.SUNKEN , bg = 'light yellow' , fg = 'red')
-    Swap_label.grid(row = 0 ,columnspan = 2)
-    Button_swap_values = ()
+    global Buttons_list
+    Buttons_names_list = ('1','2','3','4','5','6','7','8','9','0','+','-','*','.','/','**2','**0.5','=')
+    Buttons_list_Swap = Buttons_list[:10][::-1]
     Button_places = tuple(zip(row_places[::-1] + remaining_Buttons_row_places,column_places[::-1] +remaining_Buttons_column_places)) + ((6,2),)
-    First_Button_combobox = Combobox(Swap_Window ,)
-    
-    
-    
-
-with open('History.txt' , 'r') as f:
+    get_places_both = sd.askstring('Simple Calculator' , 'Enter the Button Names to Change Places (comma Separated): ')
+    if get_places_both: 
+        try:
+            Button_replace_first , Button_replace_second = get_places_both.split(',')
+            Button_replace_first , Button_replace_second = Button_replace_first.strip().lower() , Button_replace_second.strip().lower()
+        except:
+            se('Error','Please type valid numbers only')
+        else:
+            if Button_replace_first == Button_replace_second and Button_replace_first and  Button_replace_second in Buttons_names_list:
+                se('Error','Both Buttons are Same!!')
+            elif Button_replace_first == 'clear' or Button_replace_second == 'clear':
+                se('Error','Can\'t change place of Button Clear')
+            elif Button_replace_first not in Buttons_names_list or Button_replace_second not in Buttons_names_list:
+                se('Error',f'Can\'t Swap the Button {Button_replace_first} with {Button_replace_second}')
+            else:
+                try:
+                    a,b = int(Button_replace_first) , int(Button_replace_second)
+                except:
+                    get_Button_place = list(Buttons_names_list).index
+                    first_button_row = Buttons_list[get_Button_place(Button_replace_second)].grid_info()['row']
+                    first_button_column = Buttons_list[get_Button_place(Button_replace_second)].grid_info()['column']
+                    second_button_row = Buttons_list[get_Button_place(Button_replace_first)].grid_info()['row']
+                    second_button_column = Buttons_list[get_Button_place(Button_replace_first)].grid_info()['column']
+                    Buttons_list[get_Button_place(Button_replace_second)].grid(row = second_button_row ,column = second_button_column)
+                    Buttons_list[get_Button_place(Button_replace_first)].grid(row = first_button_row ,column = first_button_column )
+          
+                else:
+                    first_button_row = Buttons_list_Swap[b].grid_info()['row']
+                    first_button_column = Buttons_list_Swap[b].grid_info()['column']
+                    second_button_row = Buttons_list_Swap[a].grid_info()['row']
+                    second_button_column = Buttons_list_Swap[a].grid_info()['column']
+                    Buttons_list_Swap[a].grid(row = first_button_row ,column = first_button_column)
+                    Buttons_list_Swap[b].grid(row = second_button_row ,column = second_button_column )
+          
+with open('History.txt' , 'a') as f:
     pass
 
 
@@ -422,6 +451,7 @@ Edit_menu.add_command(label = 'Change Background Colour',command = Pick_color_ba
 Edit_menu.add_command(label = 'Change Digits Border Colour',command = Pick_color_Digits)
 Edit_menu.add_command(label = 'Change Font Style',command = Pick_default_font_style)
 Edit_menu.add_command(label = 'Change Button Image',command = Pick_Button_Image)
+Edit_menu.add_command(label = 'Change Button Themes')
 Edit_menu.add_command(label = 'Swap Buttons Places',command = Swap_Buttons_Places)
 
 # Images for Numbers
