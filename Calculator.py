@@ -397,32 +397,66 @@ def Swap_Buttons_Places():
     Buttons_names_list = ('1','2','3','4','5','6','7','8','9','0','+','-','*','.','/','**2','**0.5','=')
     Buttons_list_Swap = Buttons_list[:10][::-1]
     Button_places = tuple(zip(row_places[::-1] + remaining_Buttons_row_places,column_places[::-1] +remaining_Buttons_column_places)) + ((6,2),)
-    get_places_both = sd.askstring('Simple Calculator' , 'Enter the Button Names to Change Places (comma Separated): ')
-    if get_places_both: 
+    
+    while True:
         try:
+            get_places_both = sd.askstring('Simple Calculator' , 'Enter the Button Names to Change Places (comma Separated): ')
             Button_replace_first , Button_replace_second = get_places_both.split(',')
             Button_replace_first , Button_replace_second = Button_replace_first.strip().lower() , Button_replace_second.strip().lower()
         except:
-            se('Error','Please type valid numbers only')
+            if get_places_both:
+                se('Error','Please type valid numbers only')
+            else:
+                break
+            
+            
+            
         else:
             if Button_replace_first == Button_replace_second and Button_replace_first and  Button_replace_second in Buttons_names_list:
                 se('Error','Both Buttons are Same!!')
+                
+                
             elif Button_replace_first == 'clear' or Button_replace_second == 'clear':
                 se('Error','Can\'t change place of Button Clear')
+                
+                
             elif Button_replace_first not in Buttons_names_list or Button_replace_second not in Buttons_names_list:
                 se('Error',f'Can\'t Swap the Button {Button_replace_first} with {Button_replace_second}')
+                
+                
             else:
                 try:
                     a,b = int(Button_replace_first) , int(Button_replace_second)
                 except:
+                    String_int_values = ('0','1','2','3','4','5','6','7','8','9')
                     get_Button_place = list(Buttons_names_list).index
-                    first_button_row = Buttons_list[get_Button_place(Button_replace_second)].grid_info()['row']
-                    first_button_column = Buttons_list[get_Button_place(Button_replace_second)].grid_info()['column']
-                    second_button_row = Buttons_list[get_Button_place(Button_replace_first)].grid_info()['row']
-                    second_button_column = Buttons_list[get_Button_place(Button_replace_first)].grid_info()['column']
-                    Buttons_list[get_Button_place(Button_replace_second)].grid(row = second_button_row ,column = second_button_column)
-                    Buttons_list[get_Button_place(Button_replace_first)].grid(row = first_button_row ,column = first_button_column )
-          
+                    if Button_replace_first in String_int_values: 
+                        a = int(Button_replace_first)
+                        first_button_row = Buttons_list[get_Button_place(Button_replace_second)].grid_info()['row']
+                        first_button_column = Buttons_list[get_Button_place(Button_replace_second)].grid_info()['column']                        
+                        second_button_row = Buttons_list_Swap[a].grid_info()['row']
+                        second_button_column = Buttons_list_Swap[a].grid_info()['column']
+                        Buttons_list[get_Button_place(Button_replace_second)].grid(row = second_button_row ,column = second_button_column)
+                        Buttons_list_Swap[a].grid(row = first_button_row ,column = first_button_column)
+                        break
+                    
+                    elif Button_replace_second in String_int_values:
+                        b = int(Button_replace_second)
+                        first_button_row = Buttons_list_Swap[b].grid_info()['row']
+                        first_button_column = Buttons_list_Swap[b].grid_info()['column']
+                        second_button_row = Buttons_list[get_Button_place(Button_replace_first)].grid_info()['row']
+                        second_button_column = Buttons_list[get_Button_place(Button_replace_first)].grid_info()['column'] 
+                        Buttons_list[get_Button_place(Button_replace_first)].grid(row = first_button_row ,column = first_button_column)
+                        Buttons_list_Swap[b].grid(row = second_button_row ,column = second_button_column )
+                        break
+                    else:
+                        first_button_row = Buttons_list[get_Button_place(Button_replace_second)].grid_info()['row']
+                        first_button_column = Buttons_list[get_Button_place(Button_replace_second)].grid_info()['column']
+                        second_button_row = Buttons_list[get_Button_place(Button_replace_first)].grid_info()['row']
+                        second_button_column = Buttons_list[get_Button_place(Button_replace_first)].grid_info()['column'] 
+                        Buttons_list[get_Button_place(Button_replace_first)].grid(row = first_button_row ,column = first_button_column)
+                        Buttons_list[get_Button_place(Button_replace_second)].grid(row = second_button_row ,column = second_button_column)
+                        break
                 else:
                     first_button_row = Buttons_list_Swap[b].grid_info()['row']
                     first_button_column = Buttons_list_Swap[b].grid_info()['column']
@@ -430,6 +464,7 @@ def Swap_Buttons_Places():
                     second_button_column = Buttons_list_Swap[a].grid_info()['column']
                     Buttons_list_Swap[a].grid(row = first_button_row ,column = first_button_column)
                     Buttons_list_Swap[b].grid(row = second_button_row ,column = second_button_column )
+                    break
           
 with open('History.txt' , 'a') as f:
     pass
