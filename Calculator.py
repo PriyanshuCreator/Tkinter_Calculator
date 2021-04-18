@@ -7,11 +7,24 @@ from os import startfile as sf
 from tkinter.messagebox import showerror as se
 from tkinter.messagebox import askyesno as ayn
 from tkinter import simpledialog as sd
+from configparser import ConfigParser as Cp
  
+# Configuring File settings
+config = Cp()
+def Config_file(file, section, system, value):
+    config.read(file)
+    cfgfile = open(file, 'w')
+    config.set(section, system, value)
+    config.write(cfgfile)
+    cfgfile.close()
+config.read('Settings.ini')
+
 # Basic Variables
-default_bg_color = 'sky blue'
-default_bg_digits_color = 'purple'
-default_font_style = 'Times New Roman'
+
+String_int_values = ('0','1','2','3','4','5','6','7','8','9')
+default_bg_color = config.get('Settings','default_bg_color')
+default_bg_digits_color = config.get('Settings','default_bg_digits_color')
+default_font_style = config.get('Settings','default_font_style')
 Normal_button_size = (53,53)
 Clear_button_size = (180,100)
 Image_path = 'C:\\Users\\Priyanshu\\Desktop\\Button Images\\' 
@@ -299,8 +312,9 @@ def Pick_Button_Image():
             except:
                 pass
         for i in range(len(get_values)):
-            Image_place = int(get_values[i][-1])
+            Image_place = int(get_values [i][-1]) if get_values[i][-2] not in String_int_values else int(str(get_values [i][-2]) + str(get_values [i][-1]))
             Buttons_list[i].config(image = Button_Images_All_Values[i][Image_place-1])
+
         Pick_Button_Image_times+=1
         Choose_Button_image_window.destroy()
         
@@ -315,13 +329,16 @@ def Pick_color_background():
     color = cc.askcolor(title = 'Choose Background Color')
     selected = color[1]
     Digits_frame.configure(background = selected)
-    default_bg_color = selected
+    Config_file('Settings.ini','Settings','default_bg_color',selected)
+
 
 def Pick_color_Digits():
     global default_bg_digits_color
     color = cc.askcolor(title = 'Choose Background Color')
+    selected = color[1]
     for i in Buttons_list:
-        i.configure(bg = color[1])
+        i.configure(bg = selected)
+    Config_file('Settings.ini','Settings','default_bg_digits_color',selected)
  
 def Pick_default_font_style():
     global Font_combobox ,Font_Window
@@ -333,9 +350,12 @@ def Pick_default_font_style():
     Font_combobox = Combobox(Font_Window , values = font_families , state = 'readonly')
     get_font = Entry_box.cget('font')[0:-3]
     if get_font[0]=='{':
-        Font_combobox.set(get_font[1:][:len(get_font)-2])
+        selected =  get_font[1:][:len(get_font)-2]
+        Font_combobox.set(selected)
+        Config_file('Settings.ini','Settings','default_font_style',selected)
     else:
         Font_combobox.set(get_font)
+        Config_file('Settings.ini','Settings','default_font_style',get_font)
     Font_combobox.pack()
     
     def Pick_Font_ok():
@@ -428,7 +448,6 @@ def Swap_Buttons_Places():
                 try:
                     a,b = int(Button_replace_first) , int(Button_replace_second)
                 except:
-                    String_int_values = ('0','1','2','3','4','5','6','7','8','9')
                     get_Button_place = list(Buttons_names_list).index
                     if Button_replace_first in String_int_values: 
                         a = int(Button_replace_first)
