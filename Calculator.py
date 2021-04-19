@@ -255,10 +255,7 @@ def Pick_Button_Image():
         Button_label_one_third.grid(row = Button_one_third_label_row_list[i]  , column = 0 , pady = 10)
         Images_Combobox_one_third = Combobox(Choose_Button_image_window , values = One_third_button_values[i] , state = 'readonly')
         Images_Combobox_one_third.grid(row = Button_one_third_Combobox_row_list[i]  , column = 0)
-        if Pick_Button_Image_times == 0:
-            Images_Combobox_one_third.set(One_third_button_values[i][0])
-        else:
-            Images_Combobox_one_third.set(get_values[i])
+        Images_Combobox_one_third.set(config.get('Settings',f'button_{i}'))
 
         All_Comboboxes+=(Images_Combobox_one_third,)
 
@@ -268,10 +265,7 @@ def Pick_Button_Image():
         Button_label_two_third.grid(row = Button_one_third_label_row_list[i]  , column = 1 , pady = 10)
         Images_Combobox_two_third = Combobox(Choose_Button_image_window , values = two_third_button_values[i] , state = 'readonly')
         Images_Combobox_two_third.grid(row = Button_one_third_Combobox_row_list[i]  , column = 1)
-        if Pick_Button_Image_times == 0:
-            Images_Combobox_two_third.set(two_third_button_values[i][0])
-        else:
-            Images_Combobox_two_third.set(get_values[i+6])
+        Images_Combobox_two_third.set(config.get('Settings',f'button_{i+6}'))
         All_Comboboxes+=Images_Combobox_two_third,
         
         
@@ -281,10 +275,7 @@ def Pick_Button_Image():
         Images_Combobox_names_remaining = Combobox(Choose_Button_image_window , values = remaining_Buttons_values[i],state = 'readonly')
         Images_Combobox_names_remaining.grid(row = Button_one_third_Combobox_row_list[i]  , column = 2)
         Images_Combobox_names_remaining.set(remaining_Buttons_values[i][0])
-        if Pick_Button_Image_times == 0:
-            Images_Combobox_names_remaining.set(remaining_Buttons_values[i][0])
-        else:
-            Images_Combobox_names_remaining.set(get_values[i+12])
+        Images_Combobox_names_remaining.set(config.get('Settings',f'button_{i+12}'))
         All_Comboboxes+=Images_Combobox_names_remaining,
 
     Button_Clear_all_values = ()
@@ -295,10 +286,7 @@ def Pick_Button_Image():
     Button_label_clear_all.grid(row = 14  , column = 1,pady = 15 )
     Images_Combobox_clear_all = Combobox(Choose_Button_image_window,values = Button_Clear_all_values , state = 'readonly')
     Images_Combobox_clear_all.grid(row = 15 , column = 1)
-    if Pick_Button_Image_times == 0:
-        Images_Combobox_clear_all.set('Clear All Image 1')
-    else:
-        Images_Combobox_clear_all.set(get_values[-1])
+    Images_Combobox_clear_all.set(config.get('Settings',f'button_18'))
         
     All_Comboboxes += Images_Combobox_clear_all,
     
@@ -314,6 +302,7 @@ def Pick_Button_Image():
         for i in range(len(get_values)):
             Image_place = int(get_values [i][-1]) if get_values[i][-2] not in String_int_values else int(str(get_values [i][-2]) + str(get_values [i][-1]))
             Buttons_list[i].config(image = Button_Images_All_Values[i][Image_place-1])
+            Config_file('Settings.ini','Settings',f'button_{i}',get_values[i])
 
         Pick_Button_Image_times+=1
         Choose_Button_image_window.destroy()
@@ -329,8 +318,8 @@ def Pick_color_background():
     color = cc.askcolor(title = 'Choose Background Color')
     selected = color[1]
     Digits_frame.configure(background = selected)
-    Config_file('Settings.ini','Settings','default_bg_color',selected)
-
+    if selected:
+        Config_file('Settings.ini','Settings','default_bg_color',selected)
 
 def Pick_color_Digits():
     global default_bg_digits_color
@@ -338,7 +327,8 @@ def Pick_color_Digits():
     selected = color[1]
     for i in Buttons_list:
         i.configure(bg = selected)
-    Config_file('Settings.ini','Settings','default_bg_digits_color',selected)
+    if selected:
+        Config_file('Settings.ini','Settings','default_bg_digits_color',selected)
  
 def Pick_default_font_style():
     global Font_combobox ,Font_Window
@@ -348,19 +338,13 @@ def Pick_default_font_style():
     Choose_label.pack()
     font_families = tuple(font.families())
     Font_combobox = Combobox(Font_Window , values = font_families , state = 'readonly')
-    get_font = Entry_box.cget('font')[0:-3]
-    if get_font[0]=='{':
-        selected =  get_font[1:][:len(get_font)-2]
-        Font_combobox.set(selected)
-        Config_file('Settings.ini','Settings','default_font_style',selected)
-    else:
-        Font_combobox.set(get_font)
-        Config_file('Settings.ini','Settings','default_font_style',get_font)
+    Font_combobox.set(config.get('Settings','default_font_style'))
     Font_combobox.pack()
     
     def Pick_Font_ok():
         Font_value = Font_combobox.get()
         Entry_box.configure(font = (Font_value,18))
+        Config_file('Settings.ini','Settings','default_font_style',f'{Font_value}')
         Font_Window.destroy()
     
     Ok_button = tk.Button(Font_Window ,text = 'OK',command = Pick_Font_ok,bd = 3,font = ('Times New Roman',15))
@@ -488,6 +472,29 @@ def Swap_Buttons_Places():
 with open('History.txt' , 'a') as f:
     pass
 
+# Defining Button images variables
+button_0 = 'Nine Image 3'
+button_1 = 'Eight Image 1'
+button_2 = 'Seven Image 1'
+button_3 = 'Six Image 1'
+button_4 = 'Five Image 1'
+button_5 = 'Four Image 1'
+button_6 = 'Three Image 1'
+button_7 = 'Two Image 1'
+button_8 = 'One Image 1'
+button_9 = 'Zero Image 1'
+button_10 = 'Plus Image 1'
+button_11 = 'Minus Image 1'
+button_12 = 'Multiply Image 1'
+button_13 = 'Decimal Image 1'
+button_14 = 'Divide Image 1'
+button_15 = 'Square Image 1'
+button_16 = 'Underoot Image 1'
+button_17 = 'Equal To Image 1'
+button_18 = 'Clear All Image 1'
+
+Buttons_images_variables_list = (button_0,button_1 , button_2,button_3,button_4,button_5,button_6,button_7,button_8,button_9, button_10,button_11,button_12,button_13,button_14,button_15,button_16,button_17 , button_18)
+
 
 # Creating Menus
 main_menu = tk.Menu(Calc_window)
@@ -509,10 +516,10 @@ Edit_menu.add_command(label = 'Change Button Themes')
 Edit_menu.add_command(label = 'Swap Buttons Places',command = Swap_Buttons_Places)
 
 # Images for Numbers
-Image_names = ('Plus Image 1.jpg','Minus Image 1.jpg','Multiply Image 1.jpg','Decimal Image 1.jpg','Divide Image 1.jpg','Square Image 1.jpg','Underoot Image 1.jpg','Zero Image 1.jpg','One Image 1.jpg','Two Image 1.jpg','Three Image 1.jpg','Four Image 1.jpg','Five Image 1.jpg','Six Image 1.jpg','Seven Image 1.jpg','Eight Image 1.jpg','Nine Image 1.jpg')
 All_images_Paths = ()
-for i in Image_names:
-    All_images_Paths+=(Image_path+f'{i}'),
+for i in range(17):
+    image_name = config.get('Settings',f'button_{i}')
+    All_images_Paths+=(Image_path + image_name+'.jpg'),
 Final_images = ()
 for i in range(len(All_images_Paths)):
     Open_image = Image.open(All_images_Paths[i])
@@ -538,26 +545,27 @@ remaining_Buttons_row_places = (4,4,5,5,5,6,6)
 remaining_Buttons_column_places = (1,2,0,1,2,0,1)
 
 for i in range(9,-1,-1):
-    exec(f'Button_digit_{i} = tk.Button(Digits_frame,text = str({i}) ,bd = 4 , image = Final_images[{i}+7] ,bg  = default_bg_digits_color,command = lambda : Enter_digit({i}))')
+    exec(f'Button_digit_{i} = tk.Button(Digits_frame,text = str({i}) ,bd = 4 , image = Final_images[{9-i}] ,bg  = default_bg_digits_color,command = lambda : Enter_digit({i}))')
     exec(f'Buttons_list+=(Button_digit_{i},)')
     exec(f'Button_digit_{i}.grid(row = row_places[{i}] , column = column_places[{i}] , padx = 9, pady = 3 ,ipadx = 3,ipady = 3)')
 
 Remaining_Button_Final_images = Final_images[0:7]
 
 for i in range(len(remaining_Buttons)):
-    exec(f'Button_digit_{i+10} = tk.Button(Digits_frame,text = remaining_Buttons[{i}] , font = (default_font_style,25,"bold"),bd = 4 , image = Remaining_Button_Final_images[{i}],bg = default_bg_digits_color,command = lambda : Enter_digit(remaining_Buttons[{i}]))')
+    exec(f'Button_digit_{i+10} = tk.Button(Digits_frame,text = remaining_Buttons[{i}] , font = (default_font_style,25,"bold"),bd = 4 , image = Final_images[{i+10}],bg = default_bg_digits_color,command = lambda : Enter_digit(remaining_Buttons[{i}]))')
     exec(f'Buttons_list+=(Button_digit_{i+10},)')
     exec(f'Button_digit_{i+10}.grid(row = remaining_Buttons_row_places[{i}] , column = remaining_Buttons_column_places[{i}] , padx = 9, pady = 3 ,ipadx = 3,ipady = 3)')
 
 # Equal To Button 
-
-Equal_to_button_image = Button_Equal_to_images_initialize[0]
+Equal_to_button_image_number = int(config.get('Settings','button_17')[-1])
+Equal_to_button_image = Button_Equal_to_images_initialize[Equal_to_button_image_number-1]
 Equal_to_button = tk.Button(Digits_frame,image = Equal_to_button_image , bd = 4 ,bg = default_bg_digits_color,command = equal_to)
 Buttons_list+=(Equal_to_button,)
 Equal_to_button.grid(row = 6 , column = 2 , pady = 7,ipadx = 3,ipady = 3,padx = 9)
 
 # Clear All Button
-Clear_button_image = Button_Clear_images_initialize[0]
+Clear_button_image_number = int(config.get('Settings','button_18')[-1])
+Clear_button_image = Button_Clear_images_initialize[Clear_button_image_number-1]
 Clear_button = tk.Button(Digits_frame,image = Clear_button_image, bd = 4,bg = default_bg_digits_color,command = clear_all)
 Buttons_list+=(Clear_button,)
 Clear_button.grid(row = 7 , columnspan = 3 ,padx = 9)
